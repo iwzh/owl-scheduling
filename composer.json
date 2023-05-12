@@ -1,9 +1,9 @@
 {
     "name": "iwzh/owl-scheduling",
     "alias": "任务调度",
-    "description": "方便管理 laravel 的定时任务",
+    "description": "OwlAdmin扩展:方便管理 laravel 的定时任务",
     "type": "library",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "keywords": ["owl-admin", "extension"],
     "homepage": "https://gitee.com/wzhec/owl-scheduling",
     "license": "MIT",
