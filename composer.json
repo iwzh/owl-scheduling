@@ -1,0 +1,33 @@
+{
+    "name": "iwzh/owl-scheduling",
+    "alias": "任务调度",
+    "description": "方便管理 laravel 的定时任务",
+    "type": "library",
+    "version": "1.0.0",
+    "keywords": ["owl-admin", "extension"],
+    "homepage": "https://github.com/iwzh/owl-scheduling",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "wzh",
+            "email": "wzhec@foxmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "slowlyo/owl-admin": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Iwzh\\owlScheduling\\": "src/"
+        }
+    },
+    "extra": {
+        "owl-admin": "Iwzh\\owlScheduling\\OwlSchedulingServiceProvider",
+        "laravel": {
+            "providers": [
+                "Iwzh\\owlScheduling\\OwlSchedulingServiceProvider"
+            ]
+        }
+    }
+}
