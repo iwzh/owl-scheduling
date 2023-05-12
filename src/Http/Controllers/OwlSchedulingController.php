@@ -3,6 +3,8 @@
 namespace Iwzh\owlScheduling\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Iwzh\owlScheduling\Services\SchedulingService;
 use Iwzh\owlScheduling\Support\Scheduling;
 use Slowlyo\OwlAdmin\Controllers\AdminController;
@@ -16,6 +18,7 @@ use Slowlyo\OwlAdmin\Renderers\Operation;
 use Slowlyo\OwlAdmin\Renderers\TableColumn;
 use Slowlyo\OwlAdmin\Renderers\Tag;
 use Slowlyo\OwlAdmin\Renderers\TagControl;
+use Symfony\Component\Process\Process;
 
 class OwlSchedulingController extends AdminController
 {
@@ -36,10 +39,9 @@ class OwlSchedulingController extends AdminController
     {
         $crud=CRUDTable::make()->perPage(20)
             ->affixHeader(false)
-            ->filterTogglable(true)
+            ->filterTogglable(false)
             ->filterDefaultVisible(false)
-//            ->set('primaryField', $this->service->primaryKey())
-            ->title('任务调度')
+//            ->title('任务调度')
             ->api($this->getListGetDataPath())->columns(
                 [
                     TableColumn::make()->name('index')->label('Index')->tpl('${index+1}'),
@@ -50,30 +52,15 @@ class OwlSchedulingController extends AdminController
                     TableColumn::make()->name('nextRunDate')->label('下次运行时间'),
                     TableColumn::make()->name('description')->label('介绍'),
                     Operation::make()->label('运行')->buttons([
-                       /* Button::make()->label('run')->id('run_${index}')->onEvent(
-                            ['click'=>['actions'=>[
-                                Action::make()->actionType('ajax')->set('args',[
-                                    'api'=>['url'=>'/scheduling/run?id=${index+1}','method'=>'post','responseData'=>[]],
-                                    'messages'=>['success'=>'${event.data.responseResult.msg}','failed'=>"运行失败了\${event.data.responseResult}"]
-                                ]),
-                                Action::make()->actionType('toast')->set('args',['msg'=>"\${event.data.responseResult.msg}"])
-                            ]]]
-                        ),*/
                             Button::make()->label('运行')->actionType('ajax')->confirmText('是否运行这个任务')
-//                            ->api(['url'=>'/scheduling/run?id=${index+1}','method'=>'post'])
                             ->api('/scheduling/run?id=${index+1}')
-//                                ->feedback(['title'=>'操作提示','body'=>'${__rendererData.outval}提示信息${outval}'])
                             ->feedback(
-                                Dialog::make()->title('操作提示')->size('xl')->closeOnOutside()->body(
-//                                    Html::make()->html('${outval}')
-                                    '${outval}'
-                                )
+                                Dialog::make()->title('操作提示')->size('xl')->closeOnOutside()->body('<code>${LINEBREAK(outval)}</code>')
                             )
-                                ->messages(['failed'=>'运行失败了\${event.data.responseResult|json}']),
+                            ->messages(['failed'=>'运行失败了\${event.data.responseResult|json}']),
                         ]
                     )
                 ]);
-
         return $this->baseList($crud);
     }
 
@@ -83,6 +70,9 @@ class OwlSchedulingController extends AdminController
             $scheduling = new Scheduling();
             $output = $scheduling->runTask($request->get('id'));
 //            return $this->autoResponse(true,$output);
+//            $uuid = Str::uuid()->toString();
+//            Cache::set($uuid, $output, 30);
+//            $outval=str_replace(['\r\n'],['<br>'],$output??'');
             return $this->response()->success(['outval'=>$output??''],'请求成功');
         } catch (\Exception $e) {
             return $this->response()->fail('运行出错了',$e->getMessage());
